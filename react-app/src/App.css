@@ -48,9 +48,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #e0f7fa;
-  min-height: 80vh;
-  padding-top: 40px;
+  background: rgb(35, 32, 32);
+  min-height: 120vh;
+  padding-top: 80px;
   font-family: 'Comic Sans MS', 'Comic Sans', cursive, sans-serif;
 }
 
@@ -72,13 +72,16 @@ h1 {
 .square {
   background: #fffde7;
   border: 2px solid #ffb300;
-  /* TODO - add border radius */
-  width: 80px;
+  /* add border radius */
+  border-radius: 10px;
+  width: 60px;
   height: 80px;
   font-size: 2.5rem;
   color: #4caf50;
   cursor: pointer;
-  /* TODO - add some shadow */
+  /* add some shadow */
+  box-shadow: black 2px 2px 5px;
+  padding: 1px;
   transition: background 0.2s, color 0.2s, filter 0.15s;
 }
 .square:hover {

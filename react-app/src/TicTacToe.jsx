@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-// TODO - npm install express cors react-toastify
-//import { toast, ToastContainer } from 'react-toastify';
-//import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css'; // with custom childish styles
 
 function TicTacToe() {
@@ -10,8 +9,7 @@ function TicTacToe() {
   const [winner, setWinner] = useState(null);
 
   const postResult = async (result) => {
-    // TODO - implement backend POST
-    await fetch('/api/result', {
+    await fetch('http://localhost:3000/api/result', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -19,64 +17,102 @@ function TicTacToe() {
       body: JSON.stringify({ result })
     });
   };
-  // TODO - implement backend GET: query previous match results
 
-  const calculateWinner = function(board) {/* TODO - implement */}
-
-  const handleClick = (idx) => {
-    //TODO - if (board[idx] || winner) return;
-    const newBoard = board.slice();
-    newBoard[idx] = 'X'; // TODO
-    
-    setBoard(newBoard);
-    setNextPlayer('O'); // TODO
-    const win = calculateWinner(newBoard);
-    if (win) {
-      setWinner(win);
-      //toast(`${win} wins!`);
-      //postResult(`${win} wins`);
-    } else if (!newBoard.includes(null)) {
-      //toast('Draw!');
-      //postResult('Draw');
+  const getResults = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/results');
+      const data = await response.json();
+      console.log('Previous game results:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching results:', error);
     }
   };
 
-  const handleRestart = () => {/* TODO */};
-
-  const handleSurrender = () => {
-    if (!winner) {/* TODO */}
+  const calculateWinner = function(bd) {
+    const lines = [
+      [0,1,2], [3,4,5], [6,7,8], // rows
+      [0,3,6], [1,4,7], [2,5,8], // cols
+      [0,4,8], [2,4,6]           // diagonals
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a,b,c] = lines[i];
+      if (bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) {
+        return bd[a];
+      }
+    }
+    return null;
   };
 
-return (
-  <div className="gameContainer">
-    <h1>TicTacToe!</h1>
-    <div className="grid">
-      {
-        [0,1,2].map(row => (
-          <div className="board-row" key={row}>
-            {[0,1,2].map(col => {
-              const idx = row * col // TODO - recalculate button address index
-              return (
-                <button 
-                  key="idx" 
-                  className="square" 
-                  
-                >
-                  {board?.idx} {/* TODO */}
-                </button>
-              );
-            })}
-          </div>
-        ))
-      }
+  const handleClick = (idx) => {
+    if (board[idx] || winner) return;
+    const newBoard = board.slice();
+    newBoard[idx] = nextPlayer;
+
+    setBoard(newBoard);
+    const win = calculateWinner(newBoard);
+    if (win) {
+      setWinner(win);
+      toast(`${win} wins!`);
+      postResult(`${win} wins`);
+      setNextPlayer(prev => prev); // no change after end
+    } else if (!newBoard.includes(null)) {
+      toast('Draw!');
+      postResult('Draw');
+      setNextPlayer(prev => prev);
+    } else {
+      setNextPlayer(prev => (prev === 'X' ? 'O' : 'X'));
+    }
+  };
+
+  const handleRestart = () => {
+    setBoard(Array(9).fill(null));
+    setNextPlayer('X');
+    setWinner(null);
+  };
+
+  const handleSurrender = () => {
+    if (!winner) {
+      const surrenderedBy = nextPlayer; // the player who would play next surrenders
+      const victor = surrenderedBy === 'X' ? 'O' : 'X';
+      setWinner(victor);
+      toast(`${victor} wins by surrender`);
+      postResult(`${victor} wins by surrender`);
+    }
+  };
+
+  return (
+    <div className="gameContainer">
+      <h1>TicTacToe!</h1>
+      <div className="status">{winner ? `${winner} wins` : `Next: ${nextPlayer}`}</div>
+      <div className="grid">
+        {
+          [0,1,2].map(row => (
+            <div className="board-row" key={row}>
+              {[0,1,2].map(col => {
+                const idx = row * 3 + col;
+                return (
+                  <button 
+                    key={idx} 
+                    className="square" 
+                    onClick={() => handleClick(idx)}
+                    aria-label={`square-${idx}`}
+                  >
+                    {board[idx]}
+                  </button>
+                );
+              })}
+            </div>
+          ))
+        }
+      </div>
+      <div className="controls">
+        <button onClick={handleRestart}>Restart</button>
+        <button onClick={handleSurrender}>Surrender</button>
+      </div>
+      <ToastContainer position="top-center" />
     </div>
-    <div className="controls">
-      <button >Restart</button>
-      <button >Surrender</button>
-    </div>
-    {/*<ToastContainer position="top-center" />*/}
-  </div>
-);
+  );
 }
 
 export default TicTacToe;
