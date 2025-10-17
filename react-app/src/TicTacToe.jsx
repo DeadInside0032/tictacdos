@@ -17,8 +17,7 @@ function TicTacToe() {
   });
 
   const postResult = async (result) => {
-    // TODO - implement backend POST
-    await fetch('/api/result', {
+    await fetch('http://localhost:3000/api/result', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -26,36 +25,68 @@ function TicTacToe() {
       body: JSON.stringify({ result })
     });
   };
-  // TODO - implement backend GET: query previous match results
 
-  const calculateWinner = function(board) {
-    const lines=[
-      
-    ]
-  }
+  const getResults = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/results');
+      const data = await response.json();
+      console.log('Previous game results:', data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching results:', error);
+    }
+  };
+
+  const calculateWinner = function(bd) {
+    const lines = [
+      [0,1,2], [3,4,5], [6,7,8], // rows
+      [0,3,6], [1,4,7], [2,5,8], // cols
+      [0,4,8], [2,4,6]           // diagonals
+    ];
+    for (let i = 0; i < lines.length; i++) {
+      const [a,b,c] = lines[i];
+      if (bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) {
+        return bd[a];
+      }
+    }
+    return null;
+  };
 
   const handleClick = (idx) => {
     if (board[idx] || winner) return;
     const newBoard = board.slice();
-    newBoard[idx] = 'X'; // TODO
-    
+    newBoard[idx] = nextPlayer;
+
     setBoard(newBoard);
-    setNextPlayer('O'); // TODO
     const win = calculateWinner(newBoard);
     if (win) {
       setWinner(win);
       toast(`${win} wins!`);
       postResult(`${win} wins`);
+      setNextPlayer(prev => prev); // no change after end
     } else if (!newBoard.includes(null)) {
       toast('Draw!');
       postResult('Draw');
+      setNextPlayer(prev => prev);
+    } else {
+      setNextPlayer(prev => (prev === 'X' ? 'O' : 'X'));
     }
   };
 
-  const handleRestart = () => {/* TODO */};
+  const handleRestart = () => {
+    setBoard(Array(9).fill(null));
+    setNextPlayer('X');
+    setWinner(null);
+  };
 
   const handleSurrender = () => {
-    if (!winner) {/* TODO */}
+    if (!winner) {
+      const surrenderedBy = nextPlayer; // the player who would play next surrenders
+      const victor = surrenderedBy === 'X' ? 'O' : 'X';
+      setWinner(victor);
+      toast(`${victor} wins by surrender`);
+      postResult(`${victor} wins by surrender`);
+    }
   };
 
 return (

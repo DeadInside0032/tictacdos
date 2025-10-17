@@ -1,22 +1,30 @@
-const express = require("express")
-const app = express()
-const cors = require("cors")
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const port = 3333;
 
-app.use(cors())
-app.use(express.json())
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-const port = 3333
+// Store game results
+let gameResults = [];
 
-app.post("/api/result", (req, res) => {
-    console.log(req.body)
-    res.sendStatus(200)
-    
-})
+// GET endpoint to get previous match results
+app.get('/api/results', (req, res) => {
+    res.json(gameResults);
+});
 
-app.get("/api/results", (req, res) => {
-    res.sendStatus(200)
-})
+// POST endpoint to save a game result
+app.post('/api/result', (req, res) => {
+    const { result } = req.body;
+    gameResults.push({
+        result,
+        timestamp: new Date()
+    });
+    res.json({ message: 'Result saved successfully' });
+});
 
-app.listen(port, ()=> {
-    console.log("Szerver mükszik itt: ", port)
-})
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+});
