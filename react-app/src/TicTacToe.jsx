@@ -53,11 +53,17 @@ function TicTacToe() {
     const win = calculateWinner(newBoard);
     if (win) {
       setWinner(win);
-      toast(`${win} wins!`);
+      toast.success(`${win} wins!`,{
+        position: "top-center",
+        theme: "colored"
+      });
       postResult(`${win} wins`);
       setNextPlayer(prev => prev); // no change after end
     } else if (!newBoard.includes(null)) {
-      toast('Draw!');
+      toast.warn('Draw!',{
+        position: "top-center",
+        theme: "colored"
+      });
       postResult('Draw');
       setNextPlayer(prev => prev);
     } else {
@@ -76,7 +82,10 @@ function TicTacToe() {
       const surrenderedBy = nextPlayer; // the player who would play next surrenders
       const victor = surrenderedBy === 'X' ? 'O' : 'X';
       setWinner(victor);
-      toast(`${victor} wins by surrender`);
+      toast.success(`${victor} wins by surrender`,{
+        position: "top-center",
+        theme: "colored"
+      });
       postResult(`${victor} wins by surrender`);
     }
   };
