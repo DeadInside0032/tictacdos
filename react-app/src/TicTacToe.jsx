@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-// npm install express cors react-toastify
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css'; // with custom childish styles
@@ -29,10 +28,14 @@ function TicTacToe() {
   };
   // TODO - implement backend GET: query previous match results
 
-  const calculateWinner = function(board) {/* TODO - implement */}
+  const calculateWinner = function(board) {
+    const lines=[
+      
+    ]
+  }
 
   const handleClick = (idx) => {
-    //TODO - if (board[idx] || winner) return;
+    if (board[idx] || winner) return;
     const newBoard = board.slice();
     newBoard[idx] = 'X'; // TODO
     
@@ -41,11 +44,11 @@ function TicTacToe() {
     const win = calculateWinner(newBoard);
     if (win) {
       setWinner(win);
-      //toast(`${win} wins!`);
-      //postResult(`${win} wins`);
+      toast(`${win} wins!`);
+      postResult(`${win} wins`);
     } else if (!newBoard.includes(null)) {
-      //toast('Draw!');
-      //postResult('Draw');
+      toast('Draw!');
+      postResult('Draw');
     }
   };
 
