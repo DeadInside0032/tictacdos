@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-// TODO - npm install express cors react-toastify
-//import { toast, ToastContainer } from 'react-toastify';
-//import 'react-toastify/dist/ReactToastify.css';
+// npm install express cors react-toastify
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css'; // with custom childish styles
 
 function TicTacToe() {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [nextPlayer, setNextPlayer] = useState('X');
   const [winner, setWinner] = useState(null);
+  const reset = () => toast.warn("Game restarted!",{
+    autoClose: 1000,
+    theme: "dark"
+  });
+  const surrender = () => toast.error("You surrendered, opponent wins!",{
+    autoClose: 3000,
+    theme: "colored"
+  });
 
   const postResult = async (result) => {
     // TODO - implement backend POST
@@ -71,10 +79,12 @@ return (
       }
     </div>
     <div className="controls">
-      <button >Restart</button>
-      <button >Surrender</button>
+      <button onClick={reset}>Restart</button>
+      <button onClick={surrender}>Surrender</button>
     </div>
-    {/*<ToastContainer position="top-center" />*/}
+      <ToastContainer 
+        position="top-center"
+      />
   </div>
 );
 }
